@@ -1,0 +1,13 @@
+django==3.0.8
+
+# test
+pytest==5.4.3
+pytest-cov==2.10.0
+pytest-django==3.9.0
+flake8==3.8.3
+
+# dev
+black
+ipdb
+isort
+pip-check

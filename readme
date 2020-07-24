@@ -1,0 +1,27 @@
+1. Dev setup.
+
+    python3.8 -m venv .venv
+    source .venv/bin/activate
+    pip install -U pip setuptools
+    pip install -r requirements-dev.txt
+
+2. Development.
+
+    source .venv/bin/activate
+    python manage.py runserver
+
+3. Testing.
+
+    flake8 apps donation
+    pytest --cov
+
+4. Formatting.
+
+    black -S -l 100 -t py38 <file or folder path>
+    isort -rc -c <file or folder path>
+
+5. Notes.
+
+    - two most recommended Python editors are PyCharm and VSCode. PyCharm is considered as a fully fledged IDE with most of the features working out of the box, while VSCode is more configurable and ligthweight. This project's structure makes VSCode almost as good as PyCharm, but without bloat of a large IDE.
+    - user_pledges view could be defined in another django app - users, but it's too early to make this types of decisions. For simplicity sake I followed standard django project structure from the tutorial (with additional apps folder), but it could be better to start with single monolithic app (views, settings, urls, wsgi files placed in single 'donation' folder at the root of project structure) and later on when groups of certain views/models would be clearly distinguishable split them to apps.
+    - requirements should be splitted into requirements.txt, requirements-test.txt and requirements-dev.txt, but for simplicity they are defined only in one file
