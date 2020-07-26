@@ -1,3 +1,4 @@
+COMMANDS:
 1. Dev setup.
 
     python3.8 -m venv .venv
@@ -25,20 +26,19 @@
     black -S -l 100 -t py38 <file or folder path>
     isort -rc -c <file or folder path>
 
-5. Notes.
-
-    1. Testing - pytest was used instead of default django test framework, because in my opinion it has better test runner
-        - `assert <test>` prints out detailed error message which simplifies tests and make them a little bit more readable
-        - more flexible fixture framework; we can pass fixtures by name as function parameter; this results in cleaner tests
-        - pytest-cov plugin which prints out easy to read coverage summary after each test run
-    2. Editor compability - VsCode config included.
-        - ctrl+u for auto-formatting current python file (line collapsing when beyond 100 chars, empty line removal, formatting, comma removal)
-        - ctrl+i for sorting imports in current file and removing duplicates
-        - ctrl+mouseclick for going to definition of python symbol
-        - alt+-/alt+shift+- for previous/next cursor mouseclick position
-        - alt+shift+mouseclick for multiple cursor in each line visual block select from the current cursor to the point of click
-        - ctrl+d for adding new cursor to the next selection occurance
-        - ctrl+j for joining lines
-    3. TODO.
-        - split requirements to prod, test and dev
-        - consider refactoring structure to single, monolithic app - remove apps folder and put everything to donation
+NOTES:
+1. Testing - pytest was used instead of default django test framework, because in my opinion it has better test runner
+    - `assert <test>` prints out detailed error message which simplifies tests and make them a little bit more readable
+    - more flexible fixture framework; we can pass fixtures by name as function parameter; this results in cleaner tests
+    - pytest-cov plugin which prints out easy to read coverage summary after each test run
+2. Editor compability - VsCode config included.
+    - ctrl+u for auto-formatting current python file (line collapsing when beyond 100 chars, empty line removal, formatting, comma removal)
+    - ctrl+i for sorting imports in current file and removing duplicates
+    - ctrl+mouseclick for going to definition of python symbol
+    - alt+-/alt+shift+- for previous/next cursor mouseclick position
+    - alt+shift+mouseclick for multiple cursor in each line visual block select from the current cursor to the point of click
+    - ctrl+d for adding new cursor to the next selection occurance
+    - ctrl+j for joining lines
+3. TODO.
+    - split requirements to prod, test and dev
+    - consider refactoring structure to single, monolithic app - remove apps folder and put everything to donation
