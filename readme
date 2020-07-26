@@ -7,7 +7,12 @@
 
 2. Development.
 
+    rm db.sqlite3
     source .venv/bin/activate
+    python manage.py migrate
+    python manage.py shell < fixtures/users.py
+    python manage.py shell < fixtures/veg_out_pledge.py
+    python manage.py shell < fixtures/clean_your_bills_pledge.py
     python manage.py runserver
 
 3. Testing.
@@ -22,6 +27,18 @@
 
 5. Notes.
 
-    - two most recommended Python editors are PyCharm and VSCode. PyCharm is considered as a fully fledged IDE with most of the features working out of the box, while VSCode is more configurable and ligthweight. This project's structure makes VSCode almost as good as PyCharm, but without bloat of a large IDE.
-    - user_pledges view could be defined in another django app - users, but it's too early to make this types of decisions. For simplicity sake I followed standard django project structure from the tutorial (with additional apps folder), but it could be better to start with single monolithic app (views, settings, urls, wsgi files placed in single 'donation' folder at the root of project structure) and later on when groups of certain views/models would be clearly distinguishable split them to apps.
-    - requirements should be splitted into requirements.txt, requirements-test.txt and requirements-dev.txt, but for simplicity they are defined only in one file
+    1. Testing - pytest was used instead of default django test framework, because in my opinion it has better test runner
+        - `assert <test>` prints out detailed error message which simplifies tests and make them a little bit more readable
+        - more flexible fixture framework; we can pass fixtures by name as function parameter; this results in cleaner tests
+        - pytest-cov plugin which prints out easy to read coverage summary after each test run
+    2. Editor compability - VsCode config included.
+        - ctrl+u for auto-formatting current python file (line collapsing when beyond 100 chars, empty line removal, formatting, comma removal)
+        - ctrl+i for sorting imports in current file and removing duplicates
+        - ctrl+mouseclick for going to definition of python symbol
+        - alt+-/alt+shift+- for previous/next cursor mouseclick position
+        - alt+shift+mouseclick for multiple cursor in each line visual block select from the current cursor to the point of click
+        - ctrl+d for adding new cursor to the next selection occurance
+        - ctrl+j for joining lines
+    3. TODO.
+        - split requirements to prod, test and dev
+        - consider refactoring structure to single, monolithic app - remove apps folder and put everything to donation

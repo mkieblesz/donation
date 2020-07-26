@@ -1,4 +1,5 @@
 import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -100,3 +101,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 
 STATIC_URL = '/static/'
+
+if 'pytest' in sys.modules:
+    DATABASES['default']['NAME'] = os.path.join(BASE_DIR, 'db.test.sqlite3')
