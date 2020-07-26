@@ -1,13 +1,13 @@
 from django.contrib.auth.models import User
 from apps.pledges.models import (
     SelectAnswerFormulaValue,
+    Action,
+    Question,
     Pledge,
-    PledgeQuestion,
-    UserPledge,
-    UserPledgeAnswer,
+    Answer,
 )
 
-pledge, _ = Pledge.objects.get_or_create(
+action, _ = Action.objects.get_or_create(
     name='Clean your bills',
     pledge_text=(
         'Within the next two months, I pledge to switch from my current energy supplier – '
@@ -16,69 +16,69 @@ pledge, _ = Pledge.objects.get_or_create(
     ),
     co2_formula='49 * {energy_supplier} * {number_of_people} * {heating_source}',
 )
-energy_supplier, _ = PledgeQuestion.objects.get_or_create(
-    pledge=pledge,
+energy_supplier, _ = Question.objects.get_or_create(
+    action=action,
     question_id='energy_supplier',
-    answer_input_type=PledgeQuestion.AnswerInputType.SELECT,
+    answer_input_type=Question.AnswerInputType.SELECT,
 )
 bog_standard, _ = SelectAnswerFormulaValue.objects.get_or_create(
-    pledge_question=energy_supplier, answer_value='bog standard', formula_value=0.5
+    question=energy_supplier, answer_value='bog standard', formula_value=0.5
 )
 a_great_green_tarif, _ = SelectAnswerFormulaValue.objects.get_or_create(
-    pledge_question=energy_supplier, answer_value='a great green tarif', formula_value=0
+    question=energy_supplier, answer_value='a great green tarif', formula_value=0
 )
-heating_source, _ = PledgeQuestion.objects.get_or_create(
-    pledge=pledge,
+heating_source, _ = Question.objects.get_or_create(
+    action=action,
     question_id='heating_source',
-    answer_input_type=PledgeQuestion.AnswerInputType.SELECT,
+    answer_input_type=Question.AnswerInputType.SELECT,
 )
 gas_or_oil, _ = SelectAnswerFormulaValue.objects.get_or_create(
-    pledge_question=heating_source, answer_value='gas or oil', formula_value=5
+    question=heating_source, answer_value='gas or oil', formula_value=5
 )
 electricity, _ = SelectAnswerFormulaValue.objects.get_or_create(
-    pledge_question=heating_source, answer_value='electricity', formula_value=3
+    question=heating_source, answer_value='electricity', formula_value=3
 )
-number_of_people, _ = PledgeQuestion.objects.get_or_create(
-    pledge=pledge,
+number_of_people, _ = Question.objects.get_or_create(
+    action=action,
     question_id='number_of_people',
-    answer_input_type=PledgeQuestion.AnswerInputType.NUMERIC,
+    answer_input_type=Question.AnswerInputType.NUMERIC,
 )
 
 
 user1 = User.objects.get(username='user1')
-up, _ = UserPledge.objects.get_or_create(
-    user=user1, pledge=pledge, message='For sure I will do that!'
+up, _ = Pledge.objects.get_or_create(
+    user=user1, action=action, message='For sure I will do that!'
 )
-UserPledgeAnswer.objects.get_or_create(
-    user_pledge=up,
-    pledge_question=energy_supplier,
+Answer.objects.get_or_create(
+    pledge=up,
+    question=energy_supplier,
     answer_value=bog_standard.answer_value,
     formula_value=bog_standard.formula_value,
 )
-UserPledgeAnswer.objects.get_or_create(
-    user_pledge=up,
-    pledge_question=heating_source,
+Answer.objects.get_or_create(
+    pledge=up,
+    question=heating_source,
     answer_value=electricity.answer_value,
     formula_value=electricity.formula_value,
 )
-UserPledgeAnswer.objects.get_or_create(
-    user_pledge=up, pledge_question=number_of_people, answer_value=4, formula_value=4
+Answer.objects.get_or_create(
+    pledge=up, question=number_of_people, answer_value=4, formula_value=4
 )
 
 user2 = User.objects.get(username='user2')
-up, _ = UserPledge.objects.get_or_create(user=user2, pledge=pledge, message='You bet I do that!')
-UserPledgeAnswer.objects.get_or_create(
-    user_pledge=up,
-    pledge_question=energy_supplier,
+up, _ = Pledge.objects.get_or_create(user=user2, action=action, message='You bet I do that!')
+Answer.objects.get_or_create(
+    pledge=up,
+    question=energy_supplier,
     answer_value=a_great_green_tarif.answer_value,
     formula_value=a_great_green_tarif.formula_value,
 )
-UserPledgeAnswer.objects.get_or_create(
-    user_pledge=up,
-    pledge_question=heating_source,
+Answer.objects.get_or_create(
+    pledge=up,
+    question=heating_source,
     answer_value=gas_or_oil.answer_value,
     formula_value=gas_or_oil.formula_value,
 )
-UserPledgeAnswer.objects.get_or_create(
-    user_pledge=up, pledge_question=number_of_people, answer_value=1, formula_value=1
+Answer.objects.get_or_create(
+    pledge=up, question=number_of_people, answer_value=1, formula_value=1
 )

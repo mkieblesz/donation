@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 
-class Pledge(models.Model):
+class Action(models.Model):
     name = models.CharField(max_length=64, unique=False)
     created_at = models.DateTimeField(auto_now_add=True)
     pledge_text = models.CharField(max_length=512)
@@ -15,13 +15,13 @@ class Pledge(models.Model):
         return f'{self.name}'
 
 
-class PledgeQuestion(models.Model):
+class Question(models.Model):
     class AnswerInputType(models.TextChoices):
         NUMERIC = 'numeric', 'numeric'
         SELECT = 'select', 'select'
 
     question_id = models.SlugField(primary_key=True)
-    pledge = models.ForeignKey('Pledge', on_delete=models.CASCADE)
+    action = models.ForeignKey('Action', on_delete=models.CASCADE)
 
     answer_input_type = models.CharField(max_length=32, choices=AnswerInputType.choices)
     answer_input_type_options = models.CharField(
@@ -38,31 +38,31 @@ class PledgeQuestion(models.Model):
 class SelectAnswerFormulaValue(models.Model):
     """Holds values for formula calculation types"""
 
-    pledge_question = models.ForeignKey('PledgeQuestion', on_delete=models.CASCADE)
+    question = models.ForeignKey('Question', on_delete=models.CASCADE)
     answer_value = models.CharField(max_length=64)
     formula_value = models.FloatField()
 
 
-class UserPledge(models.Model):
+class Pledge(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    pledge = models.ForeignKey('Pledge', on_delete=models.CASCADE)
+    action = models.ForeignKey('Action', on_delete=models.CASCADE)
     message = models.CharField(max_length=512, null=True, blank=True)
 
     class Meta:
-        unique_together = ['user', 'pledge']
+        unique_together = ['user', 'action']
 
 
-class UserPledgeAnswer(models.Model):
-    user_pledge = models.ForeignKey('UserPledge', on_delete=models.CASCADE)
-    pledge_question = models.ForeignKey('PledgeQuestion', on_delete=models.CASCADE)
+class Answer(models.Model):
+    pledge = models.ForeignKey('Pledge', on_delete=models.CASCADE)
+    question = models.ForeignKey('Question', on_delete=models.CASCADE)
     answer_value = models.CharField(max_length=64)
     formula_value = models.FloatField(blank=True)
 
     class Meta:
-        unique_together = ['user_pledge', 'pledge_question']
+        unique_together = ['pledge', 'question']
 
     def get_formula_value(self):
-        if self.pledge_question.has_numeric_answer():
+        if self.question.has_numeric_answer():
             return self.answer_value
 
         return SelectAnswerFormulaValue.objects.get(answer_value=self.answer_value).formula_value

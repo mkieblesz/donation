@@ -5,5 +5,5 @@ def homepage(request):
     return HttpResponse('Homepage')
 
 
-def user_pledges(request, username):
+def pledges(request, username):
     return HttpResponse('User pledges')

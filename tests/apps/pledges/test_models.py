@@ -2,18 +2,12 @@ import pytest
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
-from apps.pledges.models import (
-    Pledge,
-    PledgeQuestion,
-    SelectAnswerFormulaValue,
-    UserPledge,
-    UserPledgeAnswer
-)
+from apps.pledges.models import Action, Question, SelectAnswerFormulaValue, Pledge, Answer
 
 
 @pytest.fixture
-def pledge(db):
-    yield Pledge.objects.create(name='Test', pledge_text='Test')
+def action(db):
+    yield Action.objects.create(name='Test', pledge_text='Test')
 
 
 @pytest.fixture
@@ -22,65 +16,47 @@ def user(db):
 
 
 @pytest.fixture
-def selectable_pledge_question(pledge):
-    yield PledgeQuestion.objects.create(
-        pledge=pledge, question_id='test', answer_input_type=PledgeQuestion.AnswerInputType.SELECT,
+def selectable_question(action):
+    yield Question.objects.create(
+        action=action, question_id='test', answer_input_type=Question.AnswerInputType.SELECT,
     )
 
 
-def test_pledge_str(pledge):
-    assert str(pledge) == 'Test'
+def test_action_str(action):
+    assert str(action) == 'Test'
 
 
-def test_user_pledge_answer_clean_numeric_answer_success(pledge, user):
-    pledge_question = PledgeQuestion.objects.create(
-        pledge=pledge, question_id='test', answer_input_type=PledgeQuestion.AnswerInputType.NUMERIC,
+def test_pledge_answer_clean_numeric_answer_success(action, user):
+    question = Question.objects.create(
+        action=action, question_id='test', answer_input_type=Question.AnswerInputType.NUMERIC,
     )
-    up = UserPledge.objects.create(
-        user=user, pledge=pledge_question.pledge, message='I will do that!',
-    )
-    upa = UserPledgeAnswer(
-        user_pledge=up,
-        pledge_question=pledge_question,
-        answer_value=1,
-    )
-    upa.clean()
+    pledge = Pledge.objects.create(user=user, action=question.action, message='I will do that!',)
+    a = Answer(pledge=pledge, question=question, answer_value=1,)
+    a.clean()
 
-    assert upa.formula_value == 1
+    assert a.formula_value == 1
 
 
-def test_user_pledge_answer_clean_selectable_answer_formula_success(pledge, user):
-    pledge_question = PledgeQuestion.objects.create(
-        pledge=pledge, question_id='test', answer_input_type=PledgeQuestion.AnswerInputType.SELECT,
+def test_pledge_answer_clean_selectable_answer_formula_success(action, user):
+    question = Question.objects.create(
+        action=action, question_id='test', answer_input_type=Question.AnswerInputType.SELECT,
     )
     SelectAnswerFormulaValue.objects.get_or_create(
-        pledge_question=pledge_question, answer_value='test_answer_value', formula_value=0.5
+        question=question, answer_value='test_answer_value', formula_value=0.5
     )
-    up = UserPledge.objects.create(
-        user=user, pledge=pledge_question.pledge, message='I will do that!',
-    )
-    upa = UserPledgeAnswer(
-        user_pledge=up,
-        pledge_question=pledge_question,
-        answer_value='test_answer_value',
-    )
-    upa.clean()
+    pledge = Pledge.objects.create(user=user, action=question.action, message='I will do that!',)
+    a = Answer(pledge=pledge, question=question, answer_value='test_answer_value',)
+    a.clean()
 
-    assert upa.formula_value == 0.5
+    assert a.formula_value == 0.5
 
 
-def test_user_pledge_answer_clean_selectable_answer_formula_does_not_exist_error(pledge, user):
-    pledge_question = PledgeQuestion.objects.create(
-        pledge=pledge, question_id='test', answer_input_type=PledgeQuestion.AnswerInputType.SELECT,
+def test_pledge_answer_clean_selectable_answer_formula_does_not_exist_error(action, user):
+    question = Question.objects.create(
+        action=action, question_id='test', answer_input_type=Question.AnswerInputType.SELECT,
     )
-    up = UserPledge.objects.create(
-        user=user, pledge=pledge_question.pledge, message='I will do that!',
-    )
+    pledge = Pledge.objects.create(user=user, action=question.action, message='I will do that!',)
     with pytest.raises(ValidationError) as excinfo:
-        UserPledgeAnswer(
-            user_pledge=up,
-            pledge_question=pledge_question,
-            answer_value='not selectable value',
-        ).clean()
+        Answer(pledge=pledge, question=question, answer_value='not selectable value',).clean()
 
         assert 'Wrong answer.' == str(excinfo.value)
