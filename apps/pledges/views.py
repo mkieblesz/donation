@@ -1,4 +1,6 @@
 from django.contrib.auth.models import User
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
 from django.shortcuts import HttpResponse, get_object_or_404
 
 from apps.pledges.models import Pledge
@@ -7,14 +9,20 @@ BASE_HTML = '<html><body>{body}</body></html>'
 
 
 def homepage(request):
-    pledge_count = Pledge.objects.count()
+    pledges = Pledge.objects.all()
+    pledge_count = pledges.count()
     response_body = 'Homepage</br></br>'
     response_body += f'number of pledges: {pledge_count}</br>'
 
     if pledge_count > 0:
-        co2 = 0
-        water = 0
-        waste = 0
+        pledges_aggr = pledges.aggregate(
+            co2=Coalesce(Sum('co2_impact'), 0.0),
+            water=Coalesce(Sum('water_impact'), 0.0),
+            waste=Coalesce(Sum('waste_impact'), 0.0)
+        )
+        co2 = pledges_aggr['co2']
+        water = pledges_aggr['water']
+        waste = pledges_aggr['waste']
         response_body += f'Impact 1: {co2:.2f} of CO2 less in the athmosphere</br>'
         response_body += f'Impact 2: {water:.2f} less water used</br>'
         response_body += f'Impact 3: {waste:.2f} less waste</br>'

@@ -2,6 +2,8 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from apps.pledges.misc import get_var_names_from_string_format
+
 
 class Action(models.Model):
     name = models.CharField(max_length=64, unique=False)
@@ -50,6 +52,9 @@ class Pledge(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     action = models.ForeignKey('Action', on_delete=models.CASCADE)
     message = models.CharField(max_length=512, null=True, blank=True)
+    co2_impact = models.FloatField(null=True, blank=True)
+    water_impact = models.FloatField(null=True, blank=True)
+    waste_impact = models.FloatField(null=True, blank=True)
 
     class Meta:
         unique_together = ['user', 'action']
@@ -58,6 +63,25 @@ class Pledge(models.Model):
         return self.action.pledge_text.format(
             **{answer.question.question_id: answer.answer_value for answer in self.answer_set.all()}
         )
+
+    def get_formula_impact(self, formula_name):
+        answers = {
+            answer.question.question_id: answer.answer_value for answer in self.answer_set.all()
+        }
+
+        # not all required answers provided
+        if sorted(answers.keys()) != sorted(get_var_names_from_string_format(formula_name)):
+            return None
+
+        formula = getattr(self.action, formula_name).format(**answers)
+        return eval(formula)
+
+    def save(self, *args, **kwargs):
+        self.co2_impact = self.get_formula_impact('co2_formula')
+        self.water_impact = self.get_formula_impact('water_formula')
+        self.waste_impact = self.get_formula_impact('waste_formula')
+
+        super().save(*args, **kwargs)
 
 
 class Answer(models.Model):
