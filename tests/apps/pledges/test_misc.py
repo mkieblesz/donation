@@ -7,3 +7,7 @@ def test_get_var_names_from_string_format():
         'number',
     ]
     assert get_var_names_from_string_format('') == []
+
+
+def test_get_var_names_from_string_format_varname_is_none():
+    assert get_var_names_from_string_format('{question} * 2') == ['question']
