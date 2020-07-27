@@ -17,7 +17,7 @@ def test_pledge_get_pledge_text(db):
         action=action, question_id='number', answer_input_type=Question.AnswerInputType.NUMERIC,
     )
     pledge = Pledge.objects.create(user=user, action=question.action)
-    a = Answer.objects.create(pledge=pledge, question=question, answer_value=2, formula_value=2.0)
+    Answer.objects.create(pledge=pledge, question=question, answer_value=2, formula_value=2.0)
 
     assert pledge.get_pledge_text() == 'I plead 2 meals per week.'
 
