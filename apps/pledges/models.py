@@ -65,23 +65,28 @@ class Pledge(models.Model):
         )
 
     def get_formula_impact(self, formula_name):
-        answers = {
-            answer.question.question_id: answer.answer_value for answer in self.answer_set.all()
-        }
-
-        # not all required answers provided
-        if sorted(answers.keys()) != sorted(get_var_names_from_string_format(formula_name)):
+        formula_template = getattr(self.action, formula_name)
+        if formula_template is None:
             return None
 
-        formula = getattr(self.action, formula_name).format(**answers)
-        return eval(formula)
+        formula_questions = get_var_names_from_string_format(formula_template)
+        formula_values = {
+            answer.question.question_id: answer.formula_value
+            for answer in self.answer_set.all()
+        } if formula_questions else {}
 
-    def save(self, *args, **kwargs):
+        # not all required answers provided
+        if sorted(formula_values.keys()) != sorted(formula_questions):
+            return None
+
+        return eval(formula_template.format(**formula_values))
+
+    def update_impact(self):
         self.co2_impact = self.get_formula_impact('co2_formula')
         self.water_impact = self.get_formula_impact('water_formula')
         self.waste_impact = self.get_formula_impact('waste_formula')
 
-        super().save(*args, **kwargs)
+        self.save()
 
 
 class Answer(models.Model):
@@ -104,3 +109,7 @@ class Answer(models.Model):
             self.formula_value = self.get_formula_value()
         except SelectAnswerFormulaValue.DoesNotExist:
             raise ValidationError('Wrong answer.')
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.pledge.update_impact()

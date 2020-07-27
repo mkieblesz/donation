@@ -27,14 +27,14 @@ def test_homepage_content_pledge_aggregate_stats(db, client):
         action=action1, question_id='question', answer_input_type=Question.AnswerInputType.NUMERIC,
     )
     pledge1 = Pledge.objects.create(user=user, action=question1.action)
-    Answer.objects.create(pledge=pledge1, question=question1, answer_value=2, formula_value=2.0)
+    pledge1.update_impact()
 
     action2 = Action.objects.create(name='Action 2', pledge_text='Test', co2_formula='20',)
     question2 = Question.objects.create(
         action=action2, question_id='question', answer_input_type=Question.AnswerInputType.NUMERIC,
     )
     pledge2 = Pledge.objects.create(user=user, action=question2.action)
-    Answer.objects.create(pledge=pledge2, question=question2, answer_value=6, formula_value=6.0)
+    pledge2.update_impact()
 
     response_content = client.get(reverse('homepage')).content.decode('utf-8')
     assert 'Impact 1: 30.00 of CO2 less in the athmosphere' in response_content
