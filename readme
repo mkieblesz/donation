@@ -46,7 +46,8 @@ NOTES:
     - alt+shift+mouseclick for visual block select, with cursor at the end each included line
     - ctrl+d for adding new cursor to the next selection occurance
     - ctrl+j for joining lines
-5. TODO.
+5. CI - simple github action for automated tests.
+6. TODO.
     - use postgres
     - store answers in json field in Pledge table to simplify schema, queries and code
     - store selectable formula values in json field in Question table to simplify schema
