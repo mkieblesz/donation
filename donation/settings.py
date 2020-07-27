@@ -102,5 +102,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-if 'pytest' in sys.modules:
+if 'pytest' in sys.modules:  # pragma: no cover
     DATABASES['default']['NAME'] = os.path.join(BASE_DIR, 'db.test.sqlite3')
