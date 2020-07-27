@@ -1,34 +1,37 @@
-from django.shortcuts import HttpResponse
+from django.contrib.auth.models import User
+from django.shortcuts import HttpResponse, get_object_or_404
 
 from apps.pledges.models import Pledge
 
-HOMEPAGE_TEMPLATE = """Homepage
-
-number of pledges: {pledge_count}
-Impact 1: {co2} of CO2 less in the athmosphere
-Impact 2: {water} less water used
-Impact 3: {waste} less waste
-"""
-
-USER_PLEDGES_TEMPLATE = """User pledges
-
-{username} user has made following pledges: {pledges}"""
+BASE_HTML = '<html><body>{body}</body></html>'
 
 
 def homepage(request):
     pledge_count = Pledge.objects.count()
-    return HttpResponse(
-        HOMEPAGE_TEMPLATE.format(pledge_count=pledge_count, co2=0, water=0, waste=0)
-    )
+    response_body = 'Homepage</br></br>'
+    response_body += f'number of pledges: {pledge_count}</br>'
+
+    if pledge_count > 0:
+        co2 = 0
+        water = 0
+        waste = 0
+        response_body += f'Impact 1: {co2:.2f} of CO2 less in the athmosphere</br>'
+        response_body += f'Impact 2: {water:.2f} less water used</br>'
+        response_body += f'Impact 3: {waste:.2f} less waste</br>'
+
+    return HttpResponse(BASE_HTML.format(body=response_body))
 
 
 def user_pledges(request, username):
-    pledge_list = list(
-        Pledge.objects.filter(user__username=username)
-        .select_related('action')
-        .values_list('action__name', flat=True)
-        .distinct()
-    )
-    return HttpResponse(
-        USER_PLEDGES_TEMPLATE.format(username=username, pledges=', '.join(pledge_list))
-    )
+    user = get_object_or_404(User, username=username)
+
+    # user pledge query
+    pledges = Pledge.objects.filter(user=user).select_related('action')
+
+    response_body = f'{username} pledges</br></br>'
+    for counter, pledge in enumerate(pledges):
+        response_body += f'{counter + 1}. {pledge.action.name} - {pledge.action.pledge_text}\n'
+    else:
+        response_body += 'User has made no pledges yet.</br>'
+
+    return HttpResponse(BASE_HTML.format(body=response_body))
