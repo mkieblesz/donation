@@ -20,8 +20,8 @@ class Question(models.Model):
         NUMERIC = 'numeric', 'numeric'
         SELECT = 'select', 'select'
 
-    question_id = models.SlugField(primary_key=True)
     action = models.ForeignKey('Action', on_delete=models.CASCADE)
+    question_id = models.SlugField()
 
     answer_input_type = models.CharField(max_length=32, choices=AnswerInputType.choices)
     answer_input_type_options = models.CharField(
@@ -30,6 +30,9 @@ class Question(models.Model):
         blank=True,
         help_text='Add additional input options used to further constrain allowed input values.',
     )
+
+    class Meta:
+        unique_together = ['action', 'question_id']
 
     def has_numeric_answer(self):
         return self.answer_input_type == self.AnswerInputType.NUMERIC
