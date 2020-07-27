@@ -27,18 +27,26 @@ COMMANDS:
     isort -rc -c <file or folder path>
 
 NOTES:
-1. Testing - pytest was used instead of default django test framework, because in my opinion it has better test runner
-    - `assert <test>` prints out detailed error message which simplifies tests and make them a little bit more readable
-    - more flexible fixture framework; we can pass fixtures by name as function parameter; this results in cleaner tests
+1. Testing - pytest as a better test runner than default runner
+    - `assert <test>` prints out detailed error message so no need to use named assert functions
+    - more flexible fixture framework; we can pass fixtures by name as function parameter
     - pytest-cov plugin which prints out easy to read coverage summary after each test run
+2. Development.
+    - ipdb for more versitile debugging solution than vscode/pycharm debugger
+    - pip-check for checking if new versions of requirements were released
+2. Auto-formatting.
+    - black and isort was used to automaticall enforce python files format rules
+    - the point is to not make devs split hairs about styleguide
+    - the rule is if it's autoformatted it's correct; all edge cases should be in-line ignored
 2. Editor compability - VsCode config included.
-    - ctrl+u for auto-formatting current python file (line collapsing when beyond 100 chars, empty line removal, formatting, comma removal)
+    - ctrl+u for auto-formatting current python file
     - ctrl+i for sorting imports in current file and removing duplicates
     - ctrl+mouseclick for going to definition of python symbol
     - alt+-/alt+shift+- for previous/next cursor mouseclick position
-    - alt+shift+mouseclick for multiple cursor in each line visual block select from the current cursor to the point of click
+    - alt+shift+mouseclick for visual block select, with cursor at the end each included line
     - ctrl+d for adding new cursor to the next selection occurance
     - ctrl+j for joining lines
 3. TODO.
     - split requirements to prod, test and dev
-    - consider refactoring structure to single, monolithic app - remove apps folder and put everything to donation
+    - consider refactoring structure to single, monolithic app - move pledges to donation folder
+    - validate action formula text formats
