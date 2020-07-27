@@ -32,13 +32,13 @@ NOTES:
     - more flexible fixture framework; we can pass fixtures by name as function parameter
     - pytest-cov plugin which prints out easy to read coverage summary after each test run
 2. Development.
-    - ipdb for more versitile debugging solution than vscode/pycharm debugger
+    - ipdb for more versitile debugging solution than vscode/pycharm editor debuggers
     - pip-check for checking if new versions of requirements were released
-2. Auto-formatting.
+3. Auto-formatting.
     - black and isort was used to automaticall enforce python files format rules
     - the point is to not make devs split hairs about styleguide
     - the rule is if it's autoformatted it's correct; all edge cases should be in-line ignored
-2. Editor compability - VsCode config included.
+4. Editor compability - VsCode config included.
     - ctrl+u for auto-formatting current python file
     - ctrl+i for sorting imports in current file and removing duplicates
     - ctrl+mouseclick for going to definition of python symbol
@@ -46,7 +46,10 @@ NOTES:
     - alt+shift+mouseclick for visual block select, with cursor at the end each included line
     - ctrl+d for adding new cursor to the next selection occurance
     - ctrl+j for joining lines
-3. TODO.
+5. TODO.
+    - user postgres
+    - store answers in json field in Pledge table to simplify schema, queries and code
+    - store selectable formula values in json field in Question table to simplify schema
     - split requirements to prod, test and dev
     - consider refactoring structure to single, monolithic app - move pledges to donation folder
     - validate action formula text formats
