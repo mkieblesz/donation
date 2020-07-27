@@ -9,8 +9,14 @@ def test_homepage_success(db, client):
     assert 'Homepage' in client.get(reverse('homepage')).content.decode('utf-8')
 
 
-def test_homepage_content_no_pledges(db, client):
-    assert 'number of pledges: 0</br>' in client.get(reverse('homepage')).content.decode('utf-8')
+def test_homepage_content_pledge_count(db, client):
+    user = User.objects.create(username='user1')
+    action = Action.objects.create(name='Action 1', pledge_text='Test', co2_formula='10',)
+    question = Question.objects.create(
+        action=action, question_id='test', answer_input_type=Question.AnswerInputType.NUMERIC,
+    )
+    Pledge.objects.create(user=user, action=question.action)
+    assert 'number of pledges: 1</br>' in client.get(reverse('homepage')).content.decode('utf-8')
 
 
 def test_homepage_content_pledge_aggregate_stats(db, client):
