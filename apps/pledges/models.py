@@ -54,6 +54,11 @@ class Pledge(models.Model):
     class Meta:
         unique_together = ['user', 'action']
 
+    def get_pledge_text(self):
+        return self.action.pledge_text.format(
+            **{answer.question.question_id: answer.answer_value for answer in self.answer_set.all()}
+        )
+
 
 class Answer(models.Model):
     pledge = models.ForeignKey('Pledge', on_delete=models.CASCADE)

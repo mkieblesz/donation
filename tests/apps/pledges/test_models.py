@@ -10,6 +10,18 @@ def test_action_str(db):
     assert str(action) == 'Test'
 
 
+def test_pledge_get_pledge_text(db):
+    action = Action.objects.create(name='Test', pledge_text='I plead {number} meals per week.')
+    user = User.objects.create(username='user1')
+    question = Question.objects.create(
+        action=action, question_id='number', answer_input_type=Question.AnswerInputType.NUMERIC,
+    )
+    pledge = Pledge.objects.create(user=user, action=question.action)
+    a = Answer.objects.create(pledge=pledge, question=question, answer_value=2, formula_value=2.0)
+
+    assert pledge.get_pledge_text() == 'I plead 2 meals per week.'
+
+
 def test_pledge_answer_clean_numeric_answer_success(db):
     action = Action.objects.create(name='Test', pledge_text='Test')
     user = User.objects.create(username='user1')
@@ -17,7 +29,7 @@ def test_pledge_answer_clean_numeric_answer_success(db):
     question = Question.objects.create(
         action=action, question_id='test', answer_input_type=Question.AnswerInputType.NUMERIC,
     )
-    pledge = Pledge.objects.create(user=user, action=question.action, message='I will do that!',)
+    pledge = Pledge.objects.create(user=user, action=question.action)
     a = Answer(pledge=pledge, question=question, answer_value=1,)
     a.clean()
 
@@ -33,7 +45,7 @@ def test_pledge_answer_clean_selectable_answer_formula_success(db):
     SelectAnswerFormulaValue.objects.get_or_create(
         question=question, answer_value='test_answer_value', formula_value=0.5
     )
-    pledge = Pledge.objects.create(user=user, action=question.action, message='I will do that!',)
+    pledge = Pledge.objects.create(user=user, action=question.action)
     a = Answer(pledge=pledge, question=question, answer_value='test_answer_value',)
     a.clean()
 
@@ -46,7 +58,7 @@ def test_pledge_answer_clean_selectable_answer_formula_does_not_exist_error(db):
     question = Question.objects.create(
         action=action, question_id='test', answer_input_type=Question.AnswerInputType.SELECT,
     )
-    pledge = Pledge.objects.create(user=user, action=question.action, message='I will do that!',)
+    pledge = Pledge.objects.create(user=user, action=question.action)
     with pytest.raises(ValidationError) as excinfo:
         Answer(pledge=pledge, question=question, answer_value='not selectable value',).clean()
 

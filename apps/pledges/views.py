@@ -25,12 +25,16 @@ def homepage(request):
 def user_pledges(request, username):
     user = get_object_or_404(User, username=username)
 
-    # user pledge query
-    pledges = Pledge.objects.filter(user=user).select_related('action')
+    pledges = (
+        Pledge.objects.filter(user=user)
+        .select_related('action')
+        .prefetch_related('answer_set__question')
+    )
 
     response_body = f'{username} pledges</br></br>'
     for counter, pledge in enumerate(pledges):
-        response_body += f'{counter + 1}. {pledge.action.name} - {pledge.action.pledge_text}\n'
+        pledge_text = pledge.get_pledge_text()
+        response_body += f'{counter + 1}. {pledge.action.name} - {pledge_text}\n'
     else:
         response_body += 'User has made no pledges yet.</br>'
 
