@@ -53,5 +53,6 @@ NOTES:
     - store selectable formula values in json field in Question table to simplify schema
     - split requirements to prod, test and dev
     - consider refactoring structure to single, monolithic app - move pledges to donation folder
-    - validate action formula text formats
-    - require answers for all questions of the pledge to be provided before creating a pledge
+    - validate formula formats
+    - require answers for all questions of the pledge to be provided when creating a pledge
+    - calculate pledge impact right after pledge creation
