@@ -2,31 +2,18 @@ import pytest
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
-from apps.pledges.models import Action, Question, SelectAnswerFormulaValue, Pledge, Answer
+from apps.pledges.models import Action, Answer, Pledge, Question, SelectAnswerFormulaValue
 
 
-@pytest.fixture
-def action(db):
-    yield Action.objects.create(name='Test', pledge_text='Test')
-
-
-@pytest.fixture
-def user(db):
-    yield User.objects.create(username='user1')
-
-
-@pytest.fixture
-def selectable_question(action):
-    yield Question.objects.create(
-        action=action, question_id='test', answer_input_type=Question.AnswerInputType.SELECT,
-    )
-
-
-def test_action_str(action):
+def test_action_str(db):
+    action = Action.objects.create(name='Test', pledge_text='Test')
     assert str(action) == 'Test'
 
 
-def test_pledge_answer_clean_numeric_answer_success(action, user):
+def test_pledge_answer_clean_numeric_answer_success(db):
+    action = Action.objects.create(name='Test', pledge_text='Test')
+    user = User.objects.create(username='user1')
+
     question = Question.objects.create(
         action=action, question_id='test', answer_input_type=Question.AnswerInputType.NUMERIC,
     )
@@ -37,7 +24,9 @@ def test_pledge_answer_clean_numeric_answer_success(action, user):
     assert a.formula_value == 1
 
 
-def test_pledge_answer_clean_selectable_answer_formula_success(action, user):
+def test_pledge_answer_clean_selectable_answer_formula_success(db):
+    action = Action.objects.create(name='Test', pledge_text='Test')
+    user = User.objects.create(username='user1')
     question = Question.objects.create(
         action=action, question_id='test', answer_input_type=Question.AnswerInputType.SELECT,
     )
@@ -51,7 +40,9 @@ def test_pledge_answer_clean_selectable_answer_formula_success(action, user):
     assert a.formula_value == 0.5
 
 
-def test_pledge_answer_clean_selectable_answer_formula_does_not_exist_error(action, user):
+def test_pledge_answer_clean_selectable_answer_formula_does_not_exist_error(db):
+    action = Action.objects.create(name='Test', pledge_text='Test')
+    user = User.objects.create(username='user1')
     question = Question.objects.create(
         action=action, question_id='test', answer_input_type=Question.AnswerInputType.SELECT,
     )
